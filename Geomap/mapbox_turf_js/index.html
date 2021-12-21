@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Restaurant Complaints NYC</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://npmcdn.com/@turf/turf@3.5.1/turf.min.js'></script>
+  <link href="https://api.mapbox.com/mapbox-assembly/v0.13.0/assembly.min.css" rel="stylesheet">
+  <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.13.0/assembly.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Zilla+Slab" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  a:-webkit-any-link {
+    color: #ffc300;
+    text-decoration: none;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mapboxgl-ctrl-attrib a {
+    color: inherit;
+  }
+
+  #map {
+    width: calc(100% - 240px);
+    left: 240px;
+  }
+
+  @media only screen and (max-width: 640px) {
+    #map {
+        width: 100%;
+        height: 100%;
+        left: 0px;
+    }
+  }
+
+  .checkbox--blue {
+    filter: invert(100%);
+  }
+
+  .custom-ffc300 {
+    color: #ffc300
+  }
+
+  .custom-Zilla {
+    font-family: 'Zilla Slab', serif;
+    line-height: 28px;
+  }
+
+  #types .btn {
+    transition: background-color .3s ease, opacity .3s ease;
+  }
+  #types .btn.active {
+    background-color: #ffc300;
+  }
+  #types .btn:hover {
+    opacity: 0.8;
+  }
+
+  .mapboxgl-ctrl-group {
+    filter: invert(100%);
+  }
+
+  #control-pitch {
+    background-image: url("./img/control_2d.svg");
+  }
+
+  #control-pitch.pitch {
+    background-image: url("./img/control_3d.svg");
+  }
+
+  #sidebar {
+    overflow: scroll;
+    background-color: #333
+  }
+
+  #camera {
+    display: none;
+  }
+
+  .icon {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 100%;
+  }
+  /*camera session    */
+
+  #dotted .icon {
+    background-image: url(./img/map0_dotted.svg);
+  }
+
+  #hexbin .icon {
+    background-image: url(./img/map0_hexbin.svg);
+  }
+  /*styles session*/
+
+  #style-hexbin {
+    transition: height .4s ease;
+  }
+
+  #style-hexbin .bar {
+    flex-basis: 20%;
+    height: 60px;
+    transition: height .4s ease;
+  }
+
+  .style .chart-title {
+    flex-basis: 70%;
+  }
+  .style .min, .style .max {
+    flex-basis: 15%
+  }
+  .style .max {
+    text-align: right;
+  }
+
+  #complaint .icon {
+    background-image: url(./img/dot_complaint.svg);
+  }
+
+  #restaurant .icon {
+    background-image: url(./img/dot_restaurant.svg);
+  }
+
+  .noise .icon {
+    background-image: url(./img/type0_noise.svg);
+  }
+
+  .establishment .icon {
+    background-image: url(./img/type0_establishment.svg);
+  }
+
+  .poisoning .icon {
+    background-image: url(./img/type0_poisoning.svg);
+  }
+
+  .drinking .icon {
+    background-image: url(./img/type0_drinking.svg);
+  }
+
+  .smoking .icon {
+    background-image: url(./img/type0_smoking.svg);
+  }
+
+  .others .icon {
+    background-image: url(./img/type0_others.svg);
+  }
+
+  .noise.gray .icon {
+    background-image: url(./img/type6_noise.svg);
+  }
+
+  .establishment.gray .icon {
+    background-image: url(./img/type6_establishment.svg);
+  }
+
+  .poisoning.gray .icon {
+    background-image: url(./img/type6_poisoning.svg);
+  }
+
+  .drinking.gray .icon {
+    background-image: url(./img/type6_drinking.svg);
+  }
+
+  .smoking.gray .icon {
+    background-image: url(./img/type6_smoking.svg);
+  }
+
+  .others.gray .icon {
+    background-image: url(./img/type6_others.svg);
+  }
+
+  .noise.highlight .icon {
+    background-image: url(./img/type1_noise.svg);
+  }
+
+  .establishment.highlight .icon {
+    background-image: url(./img/type1_establishment.svg);
+  }
+
+  .poisoning.highlight .icon {
+    background-image: url(./img/type1_poisoning.svg);
+  }
+
+  .drinking.highlight .icon {
+    background-image: url(./img/type1_drinking.svg);
+  }
+
+  .smoking.highlight .icon {
+    background-image: url(./img/type1_smoking.svg);
+  }
+
+  .others.highlight .icon {
+    background-image: url(./img/type1_others.svg);
+  }
+
+  .mapboxgl-popup {
+    margin-top: 5px;
+    transition: opacity .1s ease;
+  }
+
+  .mapboxgl-popup-tip {
+    filter: invert(100%);
+    opacity: 0.8
+  }
+
+  .mapboxgl-popup-content {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    line-height: 18px;
+    max-width: 180px;
+    overflow: scroll;
+  }
+
+  </style>
+  <link rel="canonical" href="https://labs.mapbox.com/bites/00304/" >
+</head>
+
+<body>
+  <div id='map' class='absolute top bottom-mm'>
+    <div class='absolute m24 left z5' style='display:none' id='back'>
+      <div class='btn px24 btn--gray-faint color-gray-dark opacity75 cursor-pointer'>Back to overview</div>
+    </div>
+    <div class='absolute mb24 mr6 px6 right bottom z5 bg-darken50 color-gray-light'>
+      Right click and drag to rotate</div>
+    </div>
+  </div>
+  <div id='sidebar' class='w240-mm w-full prose h-full-mm color-white border-r border--black absolute top-mm bottom left p12 p24-mm opacity100-mm z4'>
+    <div id='title' class='py12'>
+      <h4 class='custom-Zilla custom-ffc300'>Restaurant Complaints <br class='none block-mm' />in New York City</h4>
+    </div>
+    <div id='intro' class='py12 none block-mm'>
+      <p>Where are the restaurants in NYC that get the most complaints? (Data source: <a href="https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9">311</a> and <a href="https://data.cityofnewyork.us/Business/Inspections/jzhd-m6uv">DCA</a> open data).</p>
+      <p>More in this <a href='https://www.mapbox.com/blog/3d-hexbin/'>blog post</a>.</p>
+    </div>
+    <div class='session-alt none'>
+      <div class='mobile-btn show-more'>Show more</div>
+      <div class='mobile-btn show-less'>Show less</div>
+    </div>
+    <div id='style-hexbin' class='style pt12 py18 border-t border--black'>
+      <small class='align-center txt-s txt-uppercase color-gray-light'>
+        Legend
+        <svg class='icon icon--s inline legend-note-icon cursor-pointer'><use xlink:href='#icon-info'/></svg>
+      </small>
+      <div class='mb12 legend-note none'>
+        <div class='px6 py6 bg-darken75 color-white round txt-s'>This graph shows complaints per hexbin at the 20th, 40th, 60th, 80th, and 100th percentile from the lowest, drawn at a log scale.</div>
+      </div>
+      <div class='flex-parent flex-parent--end-cross mx12 bars'>
+        <div class='flex-child bar hh1 round ml6' style='background-color:#752'></div>
+        <div class='flex-child bar hh2 round ml6' style='background-color:#ffc300'></div>
+        <div class='flex-child bar hh3 round ml6' style='background-color:#ff8d19'></div>
+        <div class='flex-child bar hh4 round ml6' style='background-color:#ff5733'></div>
+        <div class='flex-child bar hh5 round ml6' style='background-color:#ff2e00'></div>
+      </div>
+      <div class='flex-parent txt-s mx12 mt12'>
+        <div class='flex-child min align-left'>1</div>
+        <div class='flex-child chart-title align-center'>Loading ...</div>
+        <div class='flex-child max align-right'>oo</div>
+      </div>
+      <div class='chart txt-s none'>
+        <label class='checkbox-container mt12'>
+          <input type='checkbox' id='density'/>
+          <div class='checkbox mr6 checkbox--gray checkbox--s-label'>
+            <svg class='icon'>
+              <use xlink:href='#icon-check' />
+            </svg>
+          </div>
+          Normalize by # of restaurants
+        </label>
+      </div>
+    </div>
+    <div id='style-dotted' class='style py24 border-t border--black' style='display: none'>
+      <small class='align-center txt-s txt-uppercase color-gray-light'>Legend</small>
+      <div class='legend grid'>
+        <div class='txt-s grid col--6' id='complaint'>
+          <div class='icon'></div>
+          <div class='label'>Complaint</div>
+        </div>
+        <div class='txt-s grid col--6' id='restaurant'>
+          <div class='icon'></div>
+          <div class='label ml3'>Restaurant</div>
+        </div>
+      </div>
+    </div>
+    <div id='types' class='pt12 border-t border--black none block-mm'>
+      <small class='align-center txt-s txt-uppercase color-gray-light'>Complaint types</small>
+      <div class='legend flex-parent flex-parent--wrap'>
+        <div class='flex-child btn btn--gray cursor-pointer grid col--12 mb6 round noise' id='noise'>
+          <div class='icon mr6'></div>
+          <div class='txt-s'>Noise</div>
+        </div>
+        <div class='flex-child btn btn--gray cursor-pointer grid col--12 mb6 round establishment' id='establishment'>
+          <div class='icon mr6'></div>
+          <div class='txt-s'>Food establishment</div>
+        </div>
+        <div class='flex-child btn btn--gray cursor-pointer grid col--12 mb6 round poisoning' id='poisoning'>
+          <div class='icon mr6'></div>
+          <div class='txt-s'>Food poisoning</div>
+        </div>
+        <div class='flex-child btn btn--gray cursor-pointer grid col--12 mb6 round drinking' id='drinking'>
+          <div class='icon mr6'></div>
+          <div class='txt-s'>Drinking</div>
+        </div>
+        <div class='flex-child btn btn--gray cursor-pointer grid col--12 mb6 round smoking' id='smoking'>
+          <div class='icon mr6'></div>
+          <div class='txt-s'>Smoking</div>
+        </div>
+        <div class='flex-child btn btn--gray cursor-pointer grid col--12 round others' id='others'>
+          <div class='icon mr6'></div>
+          <div class='txt-s'>Other</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src='./grids.js'></script>
+  <script src='./index.js'></script>
+</body>
+
+</html>

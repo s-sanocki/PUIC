@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Hexagons</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <style>
+        #map {
+            position: abosolute;
+            top: 0;
+            bottom: 0;
+            height: 900px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic3Nhbm9ja2kiLCJhIjoiY2t3NTB6bWdsMDJ6djMxbDViMTR5OG5waSJ9.Fby0ouQeXSNX8UUqzaoCmw';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v9',
+            center: [-90, 35],
+            zoom: 5
+        });
+
+
+
+        // const bbox = [-96, 31, -86, 21];
+        const cellSide = 50;
+        const options = {};
+        const hexGrid = turf.hexGrid(bbox, cellSide, options);
+        hexGrid.features.forEach(f => {
+            f.properties = { density: Math.random() };
+        });
+
+        map.on('load', function () {
+
+            map.addLayer({
+                'id': 'maine',
+                'type': 'fill',
+                'source': {
+                    'type': 'geojson',
+                    'data': hexGrid
+                },
+                'layout': {},
+                'paint': {
+                    'fill-color': '#088',
+                    'fill-opacity': [
+                        "interpolate", ["linear"], ["get", "density"],
+                        0, 0.3,
+                        1, 1
+                    ]
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
