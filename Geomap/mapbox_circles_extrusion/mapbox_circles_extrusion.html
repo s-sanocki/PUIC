@@ -126,34 +126,6 @@
 
       });
 
-      // map.addSource("coordinates", {
-      //   "type": "geojson",
-      //   "data": {
-      //     "type": "FeatureCollection",
-      //     "features": [{
-      //       "type": "Feature",
-      //       "geometry": {
-      //         "type": "Point",
-      //         "coordinates": [8.538961, 47.372476]
-      //       },
-      //       "properties": {
-      //         "height": 100
-      //       }
-      //     },
-      //     {
-      //       "type": "Feature",
-      //       "geometry": {
-      //         "type": "Point",
-      //         "coordinates": [8.539961, 47.372476]
-      //       },
-      //       "properties": {
-      //         "height": 44
-      //       }
-      //     }
-      //     ]
-      //   }
-      // });
-
       map.addLayer({
         'id': 'extrusion',
         'type': 'fill-extrusion',
@@ -187,7 +159,7 @@
           var center = object.geometry.coordinates
           var radius = 25;
           var options = {
-            steps: 15,
+            steps: 6,
             units: 'meters',
             properties: f.properties
           };
