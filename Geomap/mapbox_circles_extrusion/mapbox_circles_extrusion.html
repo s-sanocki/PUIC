@@ -2,7 +2,7 @@
 
 <head>
   <meta charset='utf-8' />
-  <title>PUIC</title>
+  <title>PUIC - Mapbox widget - POC</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.css" rel="stylesheet">
@@ -88,7 +88,7 @@
       // style: 'mapbox://styles/mapbox/light-v9',
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [-0.198465, 51.505538],
-      zoom: 14 ,
+      zoom: 14,
       pitch: 40,
       antialias: true
     });
@@ -145,6 +145,35 @@
         }
       });
 
+      //popup
+      var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        anchor: 'top',
+      });
+
+      map.on("mousemove", function (e) {
+
+        var coordinates = [e.lngLat.lng, e.lngLat.lat];
+
+        var query = map.queryRenderedFeatures(e.point, {
+          layers: ["extrusion"]
+        });
+
+        if (query.length) {
+          var properties = query[0].properties;
+          var html = "<h3>" + "Amount: " + properties.height + "</h3>";
+          popup.setLngLat(coordinates)
+            .setHTML(html)
+            .addTo(map);
+        } else {
+          if (popup.isOpen() === true) {
+            popup.remove();
+          }
+        }
+
+      })
+
       map.on('sourcedata', function (e) {
         if (e.sourceId !== 'coordinates') return
         if (e.isSourceLoaded !== true) return
@@ -167,6 +196,7 @@
         })
         map.getSource('extrusion').setData(data);
       })
+
     });
 
   </script>
