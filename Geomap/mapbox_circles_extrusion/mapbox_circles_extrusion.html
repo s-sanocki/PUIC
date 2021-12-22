@@ -116,16 +116,13 @@
         }
 
         dataFetched.forEach(function (dataRow) {
-          dataSource.features.push(turf.point([dataRow.lng, dataRow.lat], { height: parseInt(dataRow.height) }));
+          dataSource.features.push(turf.point([dataRow.lng, dataRow.lat], { height: parseInt(dataRow.height), color: dataRow.color }));
         })
 
         map.addSource("coordinates", {
           "type": "geojson",
           "data": dataSource
         });
-
-        // return dataSource;
-        // console.log(dataSource);
 
       });
 
@@ -168,7 +165,8 @@
           }
         },
         'paint': {
-          'fill-extrusion-color': '#00f',
+          // 'fill-extrusion-color': '#00f',
+          'fill-extrusion-color': ['get', 'color'],
           'fill-extrusion-height': ['get', 'height'],
           'fill-extrusion-base': 0,
           'fill-extrusion-opacity': 0.9
