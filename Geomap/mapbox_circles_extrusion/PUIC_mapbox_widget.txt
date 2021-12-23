@@ -58,13 +58,13 @@
     <div>
       <h2>Filters</h2>
     </div>
-    <!-- <div>
+    <div>
       <label>Revenue</label>
       <input id="radius" type="range" min="1" max="1000" step="10" value="200"></input>
       <span id="radius-value"></span>
-    </div> -->
+    </div>
     <div>
-      <label>Debt Amount (&gt;)</label>
+      <label>Debt</label>
       <input id="coverage" type="range" min="1" max="1000" step="10" value="400"></input>
       <span id="coverage-value"></span>
     </div>
@@ -206,7 +206,7 @@
 
         if (query.length) {
           var properties = query[0].properties;
-          var html = "<h3>" + "Debt Amount: " + properties.height + "</h3>";
+          var html = "<h3>" + "Amount: " + properties.height + "</h3>";
           popup.setLngLat(coordinates)
             .setHTML(html)
             .addTo(map);
