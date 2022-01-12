@@ -65,8 +65,8 @@
     </div> -->
     <div>
       <label>Debt Amount (&gt;)</label>
-      <input id="coverage" type="range" min="1" max="1000" step="10" value="400"></input>
-      <span id="coverage-value"></span>
+      <input id="debt" type="range"></input>
+      <span id="debt-value"></span>
     </div>
     <!-- <div>
       <label>Upper Percentile</label>
@@ -151,6 +151,20 @@
     var dataUrl = 'https://raw.githubusercontent.com/s-sanocki/PUIC/master/Geomap/mapbox_circles_extrusion/heatmap-data.csv';
 
     map.on('load', function () {
+
+      var minvalue = "0";
+      var maxvalue = "500";
+
+      var debtScrollbar = document.getElementById("debt");
+      debtScrollbar.setAttribute("min", minvalue);
+      debtScrollbar.setAttribute("max", maxvalue);
+      debtScrollbar.setAttribute("step", "10");
+
+      debtScrollbar.onchange = (evt) => {
+        var value = Number(evt.target.value);
+        document.getElementById("debt-value").innerHTML = value;
+        map.setFilter('extrusion', ['>', ['get', 'height'], value]);
+      };
 
       d3.csv(dataUrl).then(function (dataFetched) {
 

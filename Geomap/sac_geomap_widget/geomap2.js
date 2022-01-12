@@ -83,10 +83,20 @@
 
         <body>
         <div id="map"></div>
+          <div id="control-panel">
+            <div>
+              <h2>Filters</h2>
+            </div>
+            <div>
+              <label>Debt</label>
+              <input id="debt" type="range"></input>
+              <span id="debt-value"></span>
+            </div>
+          </div>
         </body>
     `;
 
-  function load(prop, ele, cent) {
+  function load(prop, ele, cent, minvalue, maxvalue) {
 
     let cen = [];
     cen[0] = parseFloat(cent.split(',')[0]);
@@ -168,6 +178,17 @@
 
     map.on('load', function () {
 
+      var debtScrollbar = document.getElementById("debt");
+      debtScrollbar.setAttribute("min", minvalue);
+      debtScrollbar.setAttribute("max", maxvalue);
+      debtScrollbar.setAttribute("step", "1");
+
+      debtScrollbar.onchange = (evt) => {
+        var value = Number(evt.target.value);
+        document.getElementById("debt-value").innerHTML = value;
+        map.setFilter('extrusion', ['>', ['get', 'height'], value]);
+      };
+
       // d3.csv(dataUrl).then(function (dataFetched) {
 
       var dataSource = {
@@ -176,7 +197,7 @@
       }
 
       //   dataFetched.forEach(function (dataRow) {
-      //     dataSource.features.push(turf.point([dataRow.lng, dataRow.lat], { height: parseInt(dataRow.height), color: dataRow.color }));
+      //     dataSource.features.push(turf.point([dataRow.lng, dataRow.lat], {height: parseInt(dataRow.height), color: dataRow.color }));
       //   })
 
       var dataFetched = [];
@@ -290,14 +311,14 @@
 
       //this.$element = shadowRoot.getElementById("map");
       //var prop = '{"type":"FeatureCollection","features":[' +
-      //	'{"type": "Feature", "properties": { "City": "New York", "Country": "US", "Contract": "30000033", "ZipCode": "10059", "Amount": "78.68" }, "geometry": { "type": "Point", "coordinates": [113.950375, 22.534875] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"88.68"}, "geometry": { "type":"Point", "coordinates": [113.950625, 22.534875] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"98.68"}, "geometry": { "type":"Point", "coordinates": [113.930625, 22.516125] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"78.68"}, "geometry": { "type":"Point", "coordinates": [113.930375, 22.516125] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"88.68"}, "geometry": { "type":"Point", "coordinates": [113.930125, 22.515625] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"98.68"}, "geometry": { "type":"Point", "coordinates": [113.930125, 22.515875] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"78.68"}, "geometry": { "type":"Point", "coordinates": [113.930375, 22.515625] } },' +
-      //	'{"type":"Feature", "properties": { "City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"88.68"}, "geometry": { "type":"Point", "coordinates": [113.929625, 22.515625] } },'+
+      //	'{"type": "Feature", "properties": {"City": "New York", "Country": "US", "Contract": "30000033", "ZipCode": "10059", "Amount": "78.68" }, "geometry": {"type": "Point", "coordinates": [113.950375, 22.534875] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"88.68"}, "geometry": {"type":"Point", "coordinates": [113.950625, 22.534875] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"98.68"}, "geometry": {"type":"Point", "coordinates": [113.930625, 22.516125] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"78.68"}, "geometry": {"type":"Point", "coordinates": [113.930375, 22.516125] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"88.68"}, "geometry": {"type":"Point", "coordinates": [113.930125, 22.515625] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"98.68"}, "geometry": {"type":"Point", "coordinates": [113.930125, 22.515875] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"78.68"}, "geometry": {"type":"Point", "coordinates": [113.930375, 22.515625] } },' +
+      //	'{"type":"Feature", "properties": {"City":"New York", "Country":"US", "Contract":"30000033", "ZipCode":"10059", "Amount":"88.68"}, "geometry": {"type":"Point", "coordinates": [113.929625, 22.515625] } },'+
       //	'{"type":"Feature","properties":{"City":"New York","Country":"US","Contract":"30000033","ZipCode":"10059","Amount":"98.68"},"geometry":{"type":"Point","coordinates":[114.151875,22.555125]}}]}';
 
       //setTimeout(function () {
@@ -322,6 +343,18 @@
         this.$color = changedProperties["color"];
       }
 
+      if ("minvalue" in changedProperties) {
+        this.$minvalue = changedProperties["minvalue"];
+        var minvalue = this.$minvalue;
+        console.log("Min. value: " + minvalue);
+      }
+
+      if ("maxvalue" in changedProperties) {
+        this.$maxvalue = changedProperties["maxvalue"];
+        var maxvalue = this.$maxvalue;
+        console.log("Max. value: " + maxvalue);
+      }
+
       if (this.$info != null && this.$info != '' && this.$info != undefined) {
         var data = '{"type":"FeatureCollection","features":[' + this.$info + "]}";
         var center = this.$color;
@@ -329,7 +362,7 @@
         let ele = this._shadowRoot;
 
         //console.log("JSON - " + data);
-        load(data, ele.getElementById("map"), center);
+        load(data, ele.getElementById("map"), center, minvalue, maxvalue);
         //setTimeout(function () {
         //    load(data, this._shadowRoot.getElementById("map"), center);
         //    load(data, ele.getElementById("map"), center);
