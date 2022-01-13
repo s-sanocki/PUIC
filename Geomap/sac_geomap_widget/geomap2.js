@@ -48,7 +48,8 @@
             body {
                 margin: 0;
                 padding: 0;
-                font-family: Helvetica, Arial, sans-serif;
+                font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+                color: #404040;
               }
           
               #map {
@@ -61,6 +62,7 @@
               #control-panel {
                 position: absolute;
                 background: #fff;
+                border-radius: 4px;
                 top: 0;
                 left: 0;
                 margin: 12px;
@@ -88,15 +90,15 @@
               <h2>Filters</h2>
             </div>
             <div>
-              <label>Debt</label>
-              <input id="debt" type="range"></input>
+              <label>Debt Amount (&gt;&#61;)</label>
+              <input id="debt" type="range" value="0"></input>
               <span id="debt-value"></span>
             </div>
           </div>
         </body>
     `;
 
-  function load(prop, ele, cent, minvalue, maxvalue) {
+  function load(prop, ele, cent, minvalue, maxvalue, debtScrollbar, debtValue) {
 
     let cen = [];
     cen[0] = parseFloat(cent.split(',')[0]);
@@ -178,15 +180,16 @@
 
     map.on('load', function () {
 
-      var debtScrollbar = document.getElementById("debt");
       debtScrollbar.setAttribute("min", minvalue);
       debtScrollbar.setAttribute("max", maxvalue);
       debtScrollbar.setAttribute("step", "1");
+      debtScrollbar.value = minvalue;
+      debtValue.innerHTML = minvalue;
 
       debtScrollbar.onchange = (evt) => {
         var value = Number(evt.target.value);
-        document.getElementById("debt-value").innerHTML = value;
-        map.setFilter('extrusion', ['>', ['get', 'height'], value]);
+        debtValue.innerHTML = value;
+        map.setFilter('extrusion', ['>=', ['get', 'height'], value]);
       };
 
       // d3.csv(dataUrl).then(function (dataFetched) {
@@ -339,8 +342,8 @@
         this.$info = changedProperties["info"];
       }
 
-      if ("color" in changedProperties) {
-        this.$color = changedProperties["color"];
+      if ("coordinates" in changedProperties) {
+        this.$coordinates = changedProperties["coordinates"];
       }
 
       if ("minvalue" in changedProperties) {
@@ -357,12 +360,11 @@
 
       if (this.$info != null && this.$info != '' && this.$info != undefined) {
         var data = '{"type":"FeatureCollection","features":[' + this.$info + "]}";
-        var center = this.$color;
-
+        var center = this.$coordinates;
         let ele = this._shadowRoot;
 
         //console.log("JSON - " + data);
-        load(data, ele.getElementById("map"), center, minvalue, maxvalue);
+        load(data, ele.getElementById("map"), center, minvalue, maxvalue, ele.getElementById("debt"), ele.getElementById("debt-value"));
         //setTimeout(function () {
         //    load(data, this._shadowRoot.getElementById("map"), center);
         //    load(data, ele.getElementById("map"), center);

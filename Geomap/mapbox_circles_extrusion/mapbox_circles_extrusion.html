@@ -16,7 +16,9 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: Helvetica, Arial, sans-serif;
+      /* font-family: Helvetica, Arial, sans-serif; */
+      font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+      color: #404040;
     }
 
     #map {
@@ -29,6 +31,10 @@
     #control-panel {
       position: absolute;
       background: #fff;
+      /* font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif; */
+      /* color: #404040; */
+      /* opacity: 0.9; */
+      border-radius: 4px;
       top: 0;
       left: 0;
       margin: 12px;
@@ -39,11 +45,15 @@
     }
 
     h2 {
+      /* font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif; */
+      /* color: #404040; */
       padding: 0px;
       margin: 0px;
     }
 
     label {
+      /* font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif; */
+      /* color: #404040; */
       display: inline-block;
       width: 140px;
     }
@@ -65,7 +75,7 @@
     </div> -->
     <div>
       <label>Debt Amount (&gt;)</label>
-      <input id="debt" type="range"></input>
+      <input id="debt" type="range" value="0"></input>
       <span id="debt-value"></span>
     </div>
     <!-- <div>
@@ -152,10 +162,12 @@
 
     map.on('load', function () {
 
-      var minvalue = "0";
+      var minvalue = "100";
       var maxvalue = "500";
 
       var debtScrollbar = document.getElementById("debt");
+      debtScrollbar.value = minvalue;
+      document.getElementById("debt-value").innerHTML = minvalue;
       debtScrollbar.setAttribute("min", minvalue);
       debtScrollbar.setAttribute("max", maxvalue);
       debtScrollbar.setAttribute("step", "10");
